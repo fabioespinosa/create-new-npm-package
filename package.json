@@ -1,6 +1,6 @@
 {
     "name": "create-new-npm-package",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Package used to generate automatically readme.md and ava tests",
     "main": "index.js",
     "bin": {
