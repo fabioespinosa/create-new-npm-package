@@ -1,0 +1,20 @@
+{
+    "name": "create-new-npm-package",
+    "version": "1.0.2",
+    "description": "Package used to generate automatically readme.md and ava tests",
+    "main": "index.js",
+    "bin": {
+        "create-npm-package": "./bin/create-new-npm-package"
+    },
+    "scripts": {
+        "test": "ava"
+    },
+    "author": "Fabio Espinosa",
+    "license": "MIT",
+    "dependencies": {
+        "prompt": "^1.0.0"
+    },
+    "devDependencies": {
+        "ava": "^2.2.0"
+    }
+}

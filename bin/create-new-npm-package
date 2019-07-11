@@ -1,0 +1,129 @@
+#!/usr/bin/env node
+// This package will automatically create readme.md, test file using ava, all the dependencies,
+// and npm install
+const fs = require('fs');
+const prompt = require('prompt');
+const { spawn } = require('child_process');
+
+prompt.start();
+
+prompt.get(['package_name', 'description'], function(err, result) {
+    if (err) {
+        throw 'Error receiving prompt';
+    }
+    const { package_name, description } = result;
+
+    fs.mkdirSync(`./${package_name}`);
+    process.chdir(`./${package_name}`);
+
+    const readme = create_readme(package_name, description);
+    const package_json = create_package_json(package_name, description);
+    const gitignore = create_gitignore();
+    const license = create_license();
+    const index_file = create_index_file();
+    const test_file = create_test_file(package_name);
+
+    fs.writeFileSync(`./readme.md`, readme);
+    fs.writeFileSync(`./package.json`, package_json);
+    fs.writeFileSync(`./.gitignore`, gitignore);
+    fs.writeFileSync(`./LICENSE`, license);
+    fs.writeFileSync(`./index.js`, index_file);
+    fs.writeFileSync(`./test.js`, test_file);
+    // npm_install(package_name);
+});
+
+const create_readme = (package_name, description) => {
+    const readme = `
+# ${package_name}
+
+> ${description}
+
+## Install
+
+\`\`\`
+    $ npm install ${package_name}
+\`\`\`
+
+## Usage    
+
+# Development
+## Running tests
+\`\`\`
+    $ npm run test
+\`\`\`
+
+# FAQ
+
+## License
+
+MIT © [Fabio Espinosa](http://fabioespinosa.mit.edu)
+`;
+    return readme;
+};
+
+const create_package_json = (package_name, description) => {
+    const package_json = {
+        name: package_name,
+        version: '1.0.0',
+        description,
+        main: 'index.js',
+        scripts: {
+            test: 'ava'
+        },
+        author: 'Fabio Espinosa',
+        license: 'MIT',
+        dependencies: {},
+        devDependencies: {
+            ava: '^2.2.0'
+        }
+    };
+    return JSON.stringify(package_json);
+};
+
+const create_gitignore = () => {
+    const gitignore = fs.readFileSync(`${__dirname}/../gitignore`);
+    return gitignore;
+};
+const create_license = () => {
+    const license = fs.readFileSync(`${__dirname}/../LICENSE`);
+    return license;
+};
+
+const create_index_file = () => {
+    return `
+module.exports = () => {
+
+};`;
+};
+
+const create_test_file = package_name => {
+    return `
+import test from 'ava';
+import ${package_name} from '.';
+    
+test('${package_name} working properly', t => {
+    
+});
+
+test('${package_name} doing X', t => {
+    
+});
+`;
+};
+
+const npm_install = package_name => {
+    const command = spawn('pwd');
+    command.stdout.on('data', function(data) {
+        console.log('stdout: ' + data.toString());
+    });
+
+    command.stderr.on('data', function(data) {
+        console.log('stderr: ' + data.toString());
+    });
+
+    command.on('exit', function(code) {
+        if (+code === 0) {
+            console.log(`${package_name} created successfully`);
+        }
+    });
+};
